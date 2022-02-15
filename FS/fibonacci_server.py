@@ -58,6 +58,7 @@ def register():
     dns_data = {
         "TYPE": "A",
         "NAME": register_data.get("hostname"),
+        # TODO: replace actual export ip
         "VALUE": "127.0.0.1",
         "TTL": DEFAULT_DNS_TTL
     }
