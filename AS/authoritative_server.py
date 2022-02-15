@@ -39,13 +39,13 @@ def handle_query(query_data):
     # TODO: Search for local record
     ip_addr = "0.0.0.0"
     expire_time = time.time()
-    response_data = {
+    query_result = {
         "TYPE": addr_type,
         "NAME": hostname,
         "VALUE": ip_addr,
         "TTL": int(expire_time - time.time())
     }
-    return response_data
+    return query_result
 
 
 def run(ip, port):
