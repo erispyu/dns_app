@@ -2,6 +2,7 @@ import json
 
 from flask import Flask, request, make_response, abort
 import socket
+import requests
 
 application = Flask(__name__, static_url_path='/static')
 
@@ -19,10 +20,10 @@ def parse_fibonacci_arg(args):
 
 
 def parse_register_data(register_data):
-    hostname = register_data.get("hostname")
-    ip = register_data.get("ip")
-    as_ip = register_data.get("as_ip")
-    as_port = int(register_data.get("as_port"))
+    hostname = register_data["hostname"]
+    ip = register_data["ip"]
+    as_ip = register_data["as_ip"]
+    as_port = int(register_data["as_port"])
     register_data["as_port"] = as_port
 
 
@@ -33,9 +34,9 @@ def homepage():
 
 @application.route('/fibonacci', methods=['GET'])
 def fibonacci():
-    x = parse_fibonacci_arg(request.args)
+    number = parse_fibonacci_arg(request.args)
     a, b = 0, 1
-    for _ in range(x):
+    for _ in range(number):
         a, b = b, a + b
     response = make_response(str(a), 200)
     response.mimetype = "text/plain"
@@ -45,21 +46,26 @@ def fibonacci():
 @application.route('/register', methods=['PUT'])
 def register():
     register_data = request.get_json()
-    parse_register_data(register_data)
 
-    # TODO: register in the Authoritative Server via UDP over port 53533
+    try:
+        parse_register_data(register_data)
+    except Exception:
+        abort(400)
+
+    # register in the Authoritative Server via UDP over port 53533
     as_addr = (register_data.get("as_ip"), register_data.get("as_port"))
+    fs_ip = requests.get('https://api.ipify.org').content.decode('utf8')
     dns_data = {
         "TYPE": "A",
         "NAME": register_data.get("hostname"),
-        "VALUE": register_data.get("ip"),
+        "VALUE": "127.0.0.1",
         "TTL": DEFAULT_DNS_TTL
     }
     sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
     sock.sendto(json.dumps(dns_data).encode(), as_addr)
     as_response, _ = sock.recvfrom(RECV_BUF)
 
-    response = make_response(json.loads(as_response.decode()), 200)
+    response = make_response(json.loads(as_response.decode()), 201)
     response.mimetype = "text/plain"
     return response
 

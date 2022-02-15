@@ -43,7 +43,9 @@ def fibonacci():
     as_response = json.loads(as_msg.decode())
 
     fs_ip = as_response.get("VALUE")
-    time_to_live = int(as_response.get("TTL"))
+
+    if fs_ip is None:
+        abort(400, "Cannot solve hostname: " + hostname)
 
     # STEP 2: query FS to get the calculation result
     fs_http_url = "http://" + fs_ip + ":" + str(fs_port) + "/fibonacci"
