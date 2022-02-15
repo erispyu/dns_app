@@ -17,7 +17,11 @@ def homepage():
 @application.route('/fibonacci', methods=['GET'])
 def fibonacci():
     args = request.args
-    hostname, fs_port, number, as_ip, as_port = None
+    hostname = None
+    fs_port = None
+    number = None
+    as_ip = None
+    as_port = None
     try:
         hostname = args["hostname"]
         fs_port = int(args["fs_port"])
@@ -36,7 +40,7 @@ def fibonacci():
     sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
     sock.sendto(json.dumps(dns_query_data).encode(), as_addr)
     as_msg, _ = sock.recvfrom(RECV_BUF)
-    as_response = json.loads(as_msg).decode()
+    as_response = json.loads(as_msg.decode())
 
     fs_ip = as_response.get("VALUE")
     time_to_live = int(as_response.get("TTL"))

@@ -37,7 +37,7 @@ def handle_query(query_data):
     addr_type = query_data.get("TYPE")
     hostname = query_data.get("NAME")
     # TODO: Search for local record
-    ip_addr = "0.0.0.0"
+    ip_addr = "127.0.0.1"
     expire_time = time.time()
     query_result = {
         "TYPE": addr_type,
