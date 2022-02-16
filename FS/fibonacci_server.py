@@ -6,7 +6,7 @@ import requests
 
 application = Flask(__name__, static_url_path='/static')
 
-DEFAULT_DNS_TTL = 10
+DEFAULT_DNS_TTL = 100
 RECV_BUF = 2048
 
 
@@ -54,12 +54,11 @@ def register():
 
     # register in the Authoritative Server via UDP over port 53533
     as_addr = (register_data.get("as_ip"), register_data.get("as_port"))
-    fs_ip = requests.get('https://api.ipify.org').content.decode('utf8')
+
     dns_data = {
         "TYPE": "A",
         "NAME": register_data.get("hostname"),
-        # TODO: replace actual export ip
-        "VALUE": "127.0.0.1",
+        "VALUE": register_data.get("ip"),
         "TTL": DEFAULT_DNS_TTL
     }
     sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
