@@ -78,6 +78,7 @@ def query(query_data):
 
 
 def run(ip, port):
+    print("The AS is running on port " + str(port))
     sock = socket(AF_INET, SOCK_DGRAM)
     sock.bind((ip, port))
     while True:
